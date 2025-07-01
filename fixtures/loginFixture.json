@@ -1,0 +1,11 @@
+{
+    "validUser": {
+        "username": "pranawakc96@gmil.com",
+        "password": "hellopanda"
+    },
+
+    "invalidUser": {
+        "username": "pranawa@gmail.com",
+        "password": "hellopanda123"
+    }
+}
