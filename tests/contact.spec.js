@@ -1,83 +1,121 @@
 import {test, expect} from '@playwright/test';
-import { Contactpage } from '../pageObject/contact.po.js';
+import { ContactValidation } from '../pageObject/contact.po.js';
 import { Loginpage } from '../pageObject/login.po.js';
-const{ authenticateUser, createEntity } = require('../utils/helper.spec.js');
-let accessToken; // we create a variable to store the access token
+import {createEntity,authenticateUser,getEntity,deleteEntity,validateEntity} from "../utils/helper.spec.js";
 
 
-const testData= require('../fixtures/contactFixture.json');
+const contacttest= require('../fixtures/contactFixture.json');
 const testData2 = require('../fixtures/loginFixture.json');
 
 
-test.beforeEach(async({page})=>{    //we have multiple test so to group the common code we use beforeEach
-    const Login = new Loginpage(page);
-    await page.goto('/');  //it take the base url
-    await Login.login("pranawakc96@gmail.com", "hellopanda")
-    await Login.verifyValidLogin();
-})
+test.beforeEach(async ({ page }) => {
+  await page.goto("https://thinking-tester-contact-list.herokuapp.com/");
+  const login = new Loginpage(page);
+  await login.login("pranawakc96@gmail.com", "hellopanda");
+  await login.verifyValidLogin();
+});
 
+test.describe("ValidContact", () => {
+  test("Valid Contact Credentials", async ({ page }) => {
+    const contact = new ContactValidation(page);
+    await contact.fillContact(
+      contacttest.validcontact.firstName,
+      contacttest.validcontact.lastName,
+      contacttest.validcontact.birthDate,
+      contacttest.validcontact.email,
+      contacttest.validcontact.phoneNumber,
+      contacttest.validcontact.streetone,
+      contacttest.validcontact.streettwo,
+      contacttest.validcontact.stateProvince,
+      contacttest.validcontact.city,
+      contacttest.validcontact.postalCode,
+      contacttest.validcontact.country
+    );
+    await contact.validFill(
+      contacttest.validcontact.firstName,
+      contacttest.validcontact.lastName,
+      contacttest.validcontact.birthDate,
+      contacttest.validcontact.email,
+      contacttest.validcontact.phoneNumber,
+      contacttest.validcontact.streetone,
+      contacttest.validcontact.streettwo,
+      contacttest.validcontact.stateProvince,
+      contacttest.validcontact.city,
+      contacttest.validcontact.postalCode,
+      contacttest.validcontact.country
+    );
+  });
+});
+test.describe("Edit Contact", () => {
+  test("Edit Contact", ({ page }) => {
+    const contact = new ContactValidation(page);
+    contact.editContact(
+      contacttest.editcontact.firstName,
+      contacttest.editcontact.lastName,
+      contacttest.editcontact.birthDate,
+      contacttest.editcontact.email,
+      contacttest.editcontact.phoneNumber,
+      contacttest.editcontact.streetone,
+      contacttest.editcontact.streettwo,
+      contacttest.editcontact.stateProvince,
+      contacttest.editcontact.city,
+      contacttest.editcontact.postalCode,
+      contacttest.editcontact.country
+    );
+  });
+});
 
-test.describe('Valid contact form tests',()=>{         // if we have to give description of the test we use test.describe
-    test('Submit Valid Contact form', async({page})=>{   //we call async function
-        const contact =new Contactpage(page); // we create an object of class Loginpage
-        await contact.Contact(
-            testData.validcontact.firstname,
-            testData.validcontact.lastname,
-            testData.validcontact.dob,
-            testData.validcontact.email,
-            testData.validcontact.phonenumber,
-            testData.validcontact.streetaddress1,
-            testData.validcontact.streetaddress2,
-            testData.validcontact.city,
-            testData.validcontact.state,
-            testData.validcontact.postalcode,
-            testData.validcontact.country
-        ); // we pass the valid username and password to the async function
-        await contact.viewContact();
-        await contact.verifyValidSubmit(testData.validform.firstname,
-            testData.validcontact.lastname,
-            testData.validcontact.dob,
-            testData.validcontact.email,
-            testData.validcontact.phonenumber,
-            testData.validcontact.streetaddress1,
-            testData.validcontact.streetaddress2,
-            testData.validcontact.city,
-            testData.validcontact.state,
-            testData.validcontact.postalcode,
-            testData.validcontact.country
-        );
-    });
+test.only("Contact Edit Test", async ({ page, request }) => {
+  const Data = {
+    firstName: contacttest.validcontact.firstName,
+    lastName: contacttest.validcontact.lastName,
+    birthDate: contacttest.validcontact.birthDate,
+    email: contacttest.validcontact.email,
+    phoneNumber: contacttest.validcontact.phoneNumber,
+    streetone: contacttest.validcontact.streetone,
+    streettwo: contacttest.validcontact.streettwo,
+    stateProvince: contacttest.validcontact.stateProvince,
+    city: contacttest.validcontact.city,
+    postalCode: contacttest.validcontact.postalCode,
+    country: contacttest.validcontact.country
+  };
+  const contact = new ContactValidation(page);
+  const accessToken = await authenticateUser(
+    "pranawakc96@gmail.com",
+    "hellopanda",
+    { request }
+  );
+  await createEntity(Data, accessToken, "/contacts", { request });
+  page.reload();
+  await contact.viewContact(Data.firstName, Data.lastName);
+  await contact.contactEdit(
+    contacttest.editcontact.firstName,  
+    contacttest.editcontact.lastName,
+    contacttest.editcontact.birthDate, 
+    contacttest.editcontact.email,
+    contacttest.editcontact.phoneNumber,
+    contacttest.editcontact.streetone,
+    contacttest.editcontact.streettwo,
+    contacttest.editcontact.stateProvince,
+    contacttest.editcontact.city,
+    contacttest.editcontact.postalCode,
+    contacttest.editcontact.country
 
-    test('Contact Edit Test', async({page, request})=>{ 
+  );
+  console.log(accessToken);
+ // await contact.validateContactCreated(contacttest.editcontact.firstName, contacttest.editcontact.lastName);
+   const id = await getEntity(accessToken, "/contacts", "200", { request });
+   //await deleteEntity(accessToken, `/contact/${id}`, { request });
+    console.log(id);
+    await deleteEntity(accessToken, `/contacts/${id}`, { request });
+   await validateEntity(accessToken, `/contacts/${id}`,'404', { request });
 
-        const Data ={
-            "firstName": "Pranav",
-            "lastName": "K.C",
-            "dob": "1996-01-01",
-            "email": "pranavkc7@gmail.com",
-            "phone": "9850687312",
-            "streetAddress1": "Bansbari",
-            "streetAddress2": "Street 2",
-            "city": "Kathmandu",    
-            "state": "Bagmati",
-            "postalCode": "44500",
-            "country": "Nepal"
-        }
-
-        const contact = new Contactpage(page);
-        accessToken = await authenticateUser(testData2.validUser.username, testData2.validUser.password, {request}); // we call the authenticateUser function to get the access token
-        await createEntity(Data, accessToken,'/contact',{request}); // we call the createEntity function to create a new contact
-        page.reload();
-        await contact.viewContact();
-        await contact.contactEdit(testData.contactEdit.firstName);
-        await contact.validateContactCreated(testData.contactEdit.firstName, testData.contactEdit.lastName, testData.contactEdit.dob, testData.contactEdit.email, testData.contactEdit.phone, testData.contactEdit.streetAddress1, testData.contactEdit.streetAddress2, testData.contactEdit.city, testData.contactEdit.state, testData.contactEdit.postalCode, testData.contactEdit.country);
-        const id = await getEntity(accessToken,'/contacts','200',{request});
-        await deleteEntity(accessToken, '/contact/${id}',{request});
-        await validateEntity(accessToken,'/contact/${id}','404',{request});
-    });  
-})
-
-test.afterEach(async({page})=>{ // we use afterEach to close the browser after each test
-    await page.close();
-}) // we close the page after each test
-
+});
+test.describe('Contact testcases',() => { 
+  test('Contact Add test', async ({ page, request })  => {
+  
+  });
+});
+test.afterEach(async ({ page }) => {
+  await page.close();
+});

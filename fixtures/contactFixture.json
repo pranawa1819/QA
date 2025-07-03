@@ -1,16 +1,29 @@
 {
     "validcontact":{
-      "firstname":"pranawa",
-      "lastname":"kc",
-      "dob":"2002/12/07",
+      "firstName":"Pranawa",
+      "lastName":"K.C",
+      "birthDate":"2059-08-21",
       "email":"pranawakc187@gmail.com",
-      "phonenumber":"9841309491",
-      "streetaddress1":"Bansbari",
-      "streetaddress2":"Godwari galli",
+      "phoneNumber":"9841309491",
+      "streetone":"Bansbari",
+      "streettwo":"Godwari galli",
       "city":"Kathmandu",
-      "state":"Bagmati",
-      "postalcode":"44600",
+      "stateProvince":"Bagmati",
+      "postalCode":"44600",
       "country":"Nepal"
 
-    }
+    },
+    "editcontact": {
+    "firstName": "Sahil",
+    "lastName": "Bhattarai",
+    "birthDate": "2059-11-06",
+    "email": "sahil.bhattarai46@gmail.com",
+    "phoneNumber": "9867575644",
+    "streetone": "Kathmandu",
+    "streettwo": "Budhanilkantha",
+    "stateProvince": "Bagmati",
+    "city": "Kathmandu",
+    "postalCode": "44600",
+    "country": "Nepal"
+  }
 }
